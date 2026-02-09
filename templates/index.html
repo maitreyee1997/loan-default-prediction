@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Default Prediction</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 30px; background: #f2f2f2; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        input[type=text], input[type=number] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; font-size: 18px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Loan Default Prediction</h1>
+        <form id="loanForm">
+            <input type="number" name="feature1" placeholder="Feature 1">
+            <input type="number" name="feature2" placeholder="Feature 2">
+            <!-- Add more input fields for all features your model needs -->
+            <button type="submit">Predict</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById("loanForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const features = [];
+            for (let pair of formData.entries()) {
+                features.push(parseFloat(pair[1]));
+            }
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ features })
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById("result");
+            if (data.loan_default_prediction === 0) {
+                resultDiv.innerHTML = "<span style='color:green;'>✅ Loan Approved</span>";
+            } else {
+                resultDiv.innerHTML = "<span style='color:red;'>⚠️ Loan Not Approved</span>";
+            }
+        });
+    </script>
+</body>
+</html>
